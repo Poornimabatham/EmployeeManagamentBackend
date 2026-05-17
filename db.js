@@ -11,10 +11,21 @@ const db = mysql.createPool({
   connectionLimit: 10,
 });
 
-db.getConnection((err, connection) => {
-  if (err) throw err;
-  console.log("MySQL connected");
-  connection.release();
-});
+db.query(
+  `
+  CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'employee') NOT NULL DEFAULT 'employee',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`,
+  (err) => {
+    if (err) throw err;
+    console.log("MySQL connected & users table ready");
+  },
+);
 
 module.exports = db;
